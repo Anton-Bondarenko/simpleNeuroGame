@@ -1,4 +1,4 @@
-package ru.bondarenko.neurotest.neuro.mdp.test
+package ru.bondarenko.neurotest.neuro.mdp.windyplank
 
 import org.deeplearning4j.rl4j.learning.Learning
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration
@@ -40,10 +40,10 @@ class TestMain {
         val manager = DataManager()
 
         //define the mdp
-        val mdp = TestMdp()
+        val mdp = PlankMdp()
 
         //define the training method
-        val dql: Learning<TestState, Int, DiscreteSpace, IDQN<*>> =
+        val dql: Learning<PlankState, Int, DiscreteSpace, IDQN<*>> =
             QLearningDiscreteDense(mdp, testNet, testQl, manager)
 
         //start the training
@@ -53,21 +53,21 @@ class TestMain {
         checkDqn(dql)
     }
 
-    private fun checkDqn(dql: Learning<TestState, Int, DiscreteSpace, IDQN<*>>){
-        var testState = TestState()
+    private fun checkDqn(dql: Learning<PlankState, Int, DiscreteSpace, IDQN<*>>){
+        var plankState = PlankState()
         val environmentState = EnvironmentState()
-        val visualizer = ShowMeTest(environmentState)
+        val visualizer = ShowMePlank(environmentState)
         do {
-            environmentState.renderFrame(testState)
-            val input =  dql.getInput(testState)
+            environmentState.renderFrame(plankState)
+            val input =  dql.getInput(plankState)
             val action = dql.neuralNet.output(input)
             if (action.getDouble(0) > action.getDouble(1))
-                testState.dec()
+                plankState.dec()
             else
-                testState.inc()
-            visualizer.update(testState)
-            if (environmentState.outOfRange(testState))
-                testState = TestState()
+                plankState.inc()
+            visualizer.update(plankState)
+            if (environmentState.outOfRange(plankState))
+                plankState = PlankState()
             Thread.sleep(1_00)
         } while (true)
     }

@@ -1,4 +1,4 @@
-package ru.bondarenko.neurotest.neuro.mdp.test
+package ru.bondarenko.neurotest.neuro.mdp.windyplank
 
 import org.deeplearning4j.gym.StepReply
 import org.deeplearning4j.rl4j.mdp.MDP
@@ -6,17 +6,17 @@ import org.deeplearning4j.rl4j.space.DiscreteSpace
 import org.deeplearning4j.rl4j.space.ObservationSpace
 import org.json.JSONObject
 
-class TestMdp : MDP<TestState, Int, DiscreteSpace> {
+class PlankMdp : MDP<PlankState, Int, DiscreteSpace> {
 
     private val actionsSize = 2
     private val rewardAmount = 1.0
     private val environment = EnvironmentState()
-    private val visualizer = ShowMeTest(environment)
+    private val visualizer = ShowMePlank(environment)
     private val inputNum = 1
 
     //    private val observationSpace: ObservationSpace<TestState> = ArrayObservationSpace(IntArray(1))
-    override fun getObservationSpace(): ObservationSpace<TestState> {
-        return TestObservationSpace(IntArray(1){inputNum})
+    override fun getObservationSpace(): ObservationSpace<PlankState> {
+        return PlankObservationSpace(IntArray(1){inputNum})
     }
 
     private val actionSpace: DiscreteSpace = DiscreteSpace(actionsSize)
@@ -24,42 +24,42 @@ class TestMdp : MDP<TestState, Int, DiscreteSpace> {
         return actionSpace
     }
 
-    private var testState = TestState()
+    private var plankState = PlankState()
 
-    override fun reset(): TestState {
-        testState = TestState()
-        return testState
+    override fun reset(): PlankState {
+        plankState = PlankState()
+        return plankState
     }
 
     override fun close() {}
 
     override fun isDone(): Boolean {
-        return environment.outOfRange(testState)
+        return environment.outOfRange(plankState)
     }
 
-    override fun newInstance(): MDP<TestState, Int, DiscreteSpace> {
-        return TestMdp()
+    override fun newInstance(): MDP<PlankState, Int, DiscreteSpace> {
+        return PlankMdp()
     }
 
-    override fun step(action: Int): StepReply<TestState> {
+    override fun step(action: Int): StepReply<PlankState> {
         when (action) {
-            0 -> testState.dec()
-            1 -> testState.inc()
+            0 -> plankState.dec()
+            1 -> plankState.inc()
         }
 
         val reward = when {
-            environment.outOfRange(testState) -> {
+            environment.outOfRange(plankState) -> {
                 environment.fails ++
                 -1.0
             }else -> 0.0
 //                rewardAmount - abs(testState.x) * 0.1
         }
 
-        testState.step++
+        plankState.step++
 
-        environment.renderFrame(testState)
-        visualizer.update(testState)
+        environment.renderFrame(plankState)
+        visualizer.update(plankState)
 
-        return StepReply(testState, reward, isDone, JSONObject("{}"))
+        return StepReply(plankState, reward, isDone, JSONObject("{}"))
     }
 }

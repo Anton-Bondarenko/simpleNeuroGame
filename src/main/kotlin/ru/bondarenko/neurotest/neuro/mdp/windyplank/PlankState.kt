@@ -1,8 +1,8 @@
-package ru.bondarenko.neurotest.neuro.mdp.test
+package ru.bondarenko.neurotest.neuro.mdp.windyplank
 
 import org.deeplearning4j.rl4j.space.Encodable
 
-class TestState : Encodable{
+class PlankState : Encodable{
     var step = 0L
     var x = 0.0
 

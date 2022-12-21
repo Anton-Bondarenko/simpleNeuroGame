@@ -1,11 +1,11 @@
-package ru.bondarenko.neurotest.neuro.mdp.test
+package ru.bondarenko.neurotest.neuro.mdp.windyplank
 
 import java.awt.*
 import javax.swing.JFrame
 import javax.swing.JPanel
 
 
-class ShowMeTest(environment: EnvironmentState) {
+class ShowMePlank(environment: EnvironmentState) {
     private val title = "Show test"
     private val envPanel: EnvPanel = EnvPanel(environment)
 
@@ -21,14 +21,14 @@ class ShowMeTest(environment: EnvironmentState) {
         }
     }
 
-    fun update(state: TestState) {
+    fun update(state: PlankState) {
         envPanel.lastState = state
         envPanel.repaint()
     }
 
     class EnvPanel//setSize((environment.maxX - environment.minX) * scale, scale)
         (private val environment: EnvironmentState) : JPanel() {
-        var lastState = TestState()
+        var lastState = PlankState()
         private val scale = 100
         private val shiftX = 10
         private val shiftY = 1

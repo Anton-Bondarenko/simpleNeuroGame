@@ -1,4 +1,4 @@
-package ru.bondarenko.neurotest.neuro.mdp.test
+package ru.bondarenko.neurotest.neuro.mdp.windyplank
 
 import kotlin.random.Random
 
@@ -13,7 +13,7 @@ class EnvironmentState {
     val maxX = 10
     var fails = 0
 
-    fun renderFrame(state: TestState) {
+    fun renderFrame(state: PlankState) {
         // may be change direction?
         if (randomBoolProbability(changeDirectionProbability)) {
             direction = randomDirection()
@@ -39,7 +39,7 @@ class EnvironmentState {
         return Direction.values()[Random.nextInt(0, Direction.values().size - 1)]
     }
 
-    fun outOfRange(state: TestState): Boolean {
+    fun outOfRange(state: PlankState): Boolean {
         return !(state.x > minX && state.x < maxX)
     }
 
