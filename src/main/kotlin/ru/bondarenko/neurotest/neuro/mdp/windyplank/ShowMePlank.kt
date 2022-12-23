@@ -1,6 +1,7 @@
 package ru.bondarenko.neurotest.neuro.mdp.windyplank
 
 import java.awt.*
+import java.awt.event.WindowEvent
 import javax.swing.JFrame
 import javax.swing.JPanel
 
@@ -8,10 +9,10 @@ import javax.swing.JPanel
 class ShowMePlank(environment: EnvironmentState) {
     private val title = "Show test"
     private val envPanel: EnvPanel = EnvPanel(environment)
+    private val frame = JFrame()
 
     init {
         EventQueue.invokeLater {
-            val frame = JFrame()
             frame.title = title
             frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
             frame.layout = BorderLayout()
@@ -19,6 +20,11 @@ class ShowMePlank(environment: EnvironmentState) {
             frame.pack()
             frame.isVisible = true
         }
+    }
+
+    fun close(){
+        frame.defaultCloseOperation = JFrame.DISPOSE_ON_CLOSE
+        frame.dispatchEvent(WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
     }
 
     fun update(state: PlankState) {

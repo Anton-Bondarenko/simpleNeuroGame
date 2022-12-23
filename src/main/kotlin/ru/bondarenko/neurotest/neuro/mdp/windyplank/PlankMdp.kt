@@ -31,7 +31,9 @@ class PlankMdp : MDP<PlankState, Int, DiscreteSpace> {
         return plankState
     }
 
-    override fun close() {}
+    override fun close() {
+        visualizer.close()
+    }
 
     override fun isDone(): Boolean {
         return environment.outOfRange(plankState)
@@ -49,7 +51,6 @@ class PlankMdp : MDP<PlankState, Int, DiscreteSpace> {
 
         val reward = when {
             environment.outOfRange(plankState) -> {
-                environment.fails ++
                 -1.0
             }else -> 0.0
 //                rewardAmount - abs(testState.x) * 0.1

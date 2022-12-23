@@ -25,7 +25,6 @@ class EnvironmentState {
             Direction.LEFT -> state.x -= interactionPower
             else -> {}
         }
-
         steps++
         directionSteps++
     }
@@ -40,7 +39,12 @@ class EnvironmentState {
     }
 
     fun outOfRange(state: PlankState): Boolean {
-        return !(state.x > minX && state.x < maxX)
+        return if (state.x > minX && state.x < maxX){
+            false
+        } else{
+            fails ++
+            true
+        }
     }
 
     enum class Direction {
