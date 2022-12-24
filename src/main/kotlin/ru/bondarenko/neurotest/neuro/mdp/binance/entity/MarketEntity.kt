@@ -10,5 +10,8 @@ class MarketEntity(
     val id: Long = 0,
     @Basic
     @Column(name = "PRICE")
-    val price: Float? = null
+    val price: Float? = null,
+    @Basic
+    @Column(name = "TIME")
+    val time: Long? = null
 )

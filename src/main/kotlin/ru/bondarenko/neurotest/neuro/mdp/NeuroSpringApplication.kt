@@ -12,6 +12,7 @@ import ru.bondarenko.neurotest.neuro.mdp.binance.BinanceService
 @EnableJpaRepositories(basePackages = ["ru.bondarenko.neurotest.neuro"])
 open class NeuroSpringApplication(private val binanceService: BinanceService): CommandLineRunner {
     override fun run(vararg args: String?) {
+        binanceService.clear()
         binanceService.getAndStoreHistory(
             ISODateTimeFormat.dateTimeNoMillis().parseDateTime("2020-12-23T00:00:00Z").millis,
             ISODateTimeFormat.dateTimeNoMillis().parseDateTime("2020-12-24T00:00:00Z").millis)
