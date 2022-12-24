@@ -22,11 +22,11 @@
         <dl4j-master.version>1.0.0-M2.1</dl4j-master.version>
         <rl4j.version>1.0.0-beta2</rl4j.version>
 
-        <flyway.user>sa</flyway.user>
-        <flyway.password>password</flyway.password>
-        <flyway.schemas>binance</flyway.schemas>
-        <flyway.url>jdbc:h2:file:/data/neuron</flyway.url>
-        <flyway.location>filesystem:db/migration</flyway.location>
+<!--        <flyway.user>root</flyway.user>-->
+<!--        <flyway.password>Qwerty_1</flyway.password>-->
+<!--        <flyway.schemas>binance</flyway.schemas>-->
+<!--        <flyway.url>jdbc:h2:file:/data/neuron</flyway.url>-->
+<!--        <flyway.location>filesystem:db/migration</flyway.location>-->
     </properties>
     <dependencies>
 <!--        SPRING-->
@@ -45,11 +45,17 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+<!--        JSON-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.3</version>
+        </dependency>
 <!--        DB-->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.5.2</version>
         </dependency>
 <!--        KOTLIN-->
         <dependency>
@@ -59,9 +65,25 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging-jvm</artifactId>
+            <version>2.0.11</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.6</version>
         </dependency>
         <!--        Deep learning 4j-->
         <dependency>
@@ -164,6 +186,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
