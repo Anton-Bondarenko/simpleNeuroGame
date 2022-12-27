@@ -14,7 +14,6 @@ class PlankMdp : MDP<PlankState, Int, DiscreteSpace> {
     private val visualizer = ShowMePlank(environment)
     private val inputNum = 1
 
-    //    private val observationSpace: ObservationSpace<TestState> = ArrayObservationSpace(IntArray(1))
     override fun getObservationSpace(): ObservationSpace<PlankState> {
         return PlankObservationSpace(IntArray(1){inputNum})
     }

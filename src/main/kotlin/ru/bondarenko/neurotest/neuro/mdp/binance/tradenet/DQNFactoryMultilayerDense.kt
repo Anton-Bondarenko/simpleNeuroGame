@@ -1,4 +1,4 @@
-package ru.bondarenko.neurotest.neuro.mdp
+package ru.bondarenko.neurotest.neuro.mdp.binance.tradenet
 
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
