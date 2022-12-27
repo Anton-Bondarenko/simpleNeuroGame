@@ -14,7 +14,7 @@ open class TradeBaseNetConfig (
     private val dataConfig: DataBaseConfig = DataBaseConfig(),
     val numFeatures: Int = dataConfig.inputNum,
     val featuresShape: IntArray = intArrayOf(numFeatures),
-    val normalizationLow: INDArray = Nd4j.create(doubleArrayOf(1607000000000.0, 10000.0)),
-    val normalizationHigh: INDArray = Nd4j.create(doubleArrayOf(1609000000000.0, 30000.0))
+    val normalizationLow: INDArray = Nd4j.create(doubleArrayOf(10000.0, 1607000000000.0, -100.0, 0.0)),
+    val normalizationHigh: INDArray = Nd4j.create(doubleArrayOf(30000.0, 1609000000000.0, 100.0, 200.0))
 )
 

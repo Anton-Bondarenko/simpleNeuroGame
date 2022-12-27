@@ -62,10 +62,10 @@ class SinkMdp(
             else -> SinkAction.NO
         }
 
+        val diff =
+            tradeEnvironment.getDiff(tradeState.currentTime - dataBaseConfig.period, dataBaseConfig.period)
         val reward: Double = if (SinkAction.YES == sinkAction) {
             yesCount++
-            val diff =
-                tradeEnvironment.getDiff(tradeState.currentTime-netConfig.predictionTime, netConfig.predictionTime)
             if (diff < 0) {
                 rightCount++; 1.0
             } else {
@@ -73,7 +73,11 @@ class SinkMdp(
             }
         } else {
             noCount++
-            0.0
+            if (diff > 0) {
+                rightCount++; 1.0
+            } else {
+                wrongCount++; -1.0
+            }
         }
         tradeState.currentTime += dataBaseConfig.period
 

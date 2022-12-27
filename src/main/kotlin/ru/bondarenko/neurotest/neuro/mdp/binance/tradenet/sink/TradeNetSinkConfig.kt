@@ -17,7 +17,7 @@ import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeBaseNetConfig
 
 class TradeNetSinkConfig : TradeBaseNetConfig() {
     val netWide = 10
-    val ltmLayersAmount = 4
+    val ltmLayersAmount = 1
     val numActions: Int = 2
     val predictionTime: Long = 200 // planning horizon
     val actionSpace: DiscreteSpace = DiscreteSpace(numActions)
