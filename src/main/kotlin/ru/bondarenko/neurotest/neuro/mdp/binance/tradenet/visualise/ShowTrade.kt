@@ -1,8 +1,8 @@
 package ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.visualise
 
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeState
+import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.SinkAction
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.data.TradesAdapter
-import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.sink.SinkAction
 import java.awt.*
 import java.awt.event.WindowEvent
 import java.util.*
@@ -58,7 +58,8 @@ class ShowTrade {
 
         fun addData(data: Optional<TradesAdapter.Data>, action: SinkAction) {
             if (data.isEmpty) return
-            entities.add(VisualState(data.get(), action))
+            if (lastState == null) return
+            entities.add(VisualState(data.get(), action,  lastState!!.lastReward))
             while (entities.size >= xWidth) entities.remove(entities.first())
         }
 
@@ -72,9 +73,16 @@ class ShowTrade {
                 entities.stream().forEach { state ->
                     var y = (state.data.price - shiftY)
                     y *= scaleY
+
+                    g.color=Color.BLACK
                     g.drawLine(x - 1, yHeight - prevY.toInt(), x, yHeight - y.toInt())
-                    if (state.sinkAction == SinkAction.YES)
-                        g.drawOval(x, yHeight - y.toInt(), 10, 10)
+
+                    g.color = pickDolor(state)
+                    if (state.sinkAction == SinkAction.YES) {
+                        g.drawOval(x, yHeight - y.toInt(), 5, 5)
+                    } else {
+                        g.drawOval(x, yHeight - y.toInt(), 5, 5)
+                    }
                     minVal = minVal.coerceAtMost(state.data.price)
                     maxVal = maxVal.coerceAtLeast(state.data.price)
                     x++
@@ -90,7 +98,14 @@ class ShowTrade {
 
             }
         }
+        fun pickDolor(state: VisualState): Color{
+            return when{
+                state.reward > 0 -> Color.GREEN
+                state.reward < 0 -> Color.RED
+                else    -> Color.BLUE
+            }
+        }
 
-        data class VisualState(val data: TradesAdapter.Data, val sinkAction: SinkAction)
+        data class VisualState(val data: TradesAdapter.Data, val sinkAction: SinkAction, val reward: Double)
     }
 }

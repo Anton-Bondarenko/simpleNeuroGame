@@ -5,10 +5,12 @@ import org.deeplearning4j.rl4j.mdp.MDP
 import org.deeplearning4j.rl4j.space.DiscreteSpace
 import org.deeplearning4j.rl4j.space.ObservationSpace
 import org.json.JSONObject
-import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.DataBaseConfig
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeEnvironment
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeObservationSpace
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeState
+import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.SinkAction
+import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.TradeBaseNetConfig
+import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.TradeNetSinkConfig
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.data.TradesAdapter
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.visualise.ShowTrade
 
@@ -19,7 +21,7 @@ class SinkMdp(
     private val dataAdapter: TradesAdapter,
     private val tradeEnvironment: TradeEnvironment
 ) : MDP<TradeState, Int, DiscreteSpace> {
-    private val dataBaseConfig = DataBaseConfig()
+    private val baseConfig = TradeBaseNetConfig()
     private var tradeState = TradeState(startTime, dataAdapter)
     private var yesCount = 0
     private var noCount = 0
@@ -36,6 +38,7 @@ class SinkMdp(
     }
 
     override fun reset(): TradeState {
+        println("Reset. yes: $yesCount no: $noCount wrong: $wrongCount right: $rightCount")
         yesCount = 0
         noCount = 0
         wrongCount = 0
@@ -61,31 +64,34 @@ class SinkMdp(
             1 -> SinkAction.YES
             else -> SinkAction.NO
         }
-
-        val diff =
-            tradeEnvironment.getDiff(tradeState.currentTime - dataBaseConfig.period, dataBaseConfig.period)
-        val reward: Double = if (SinkAction.YES == sinkAction) {
-            yesCount++
-            if (diff < 0) {
-                rightCount++; 1.0
+        tradeState.sinkAction = sinkAction
+//        val diff =
+//            tradeEnvironment.getDiff(tradeState.currentTime - baseConfig.period, baseConfig.period)
+        var reward = 0.0
+        if (!tradeState.data.isEmpty)
+            reward = if (SinkAction.YES == sinkAction) {
+                yesCount++
+                if (tradeState.data.get().priceDelta < 0) {
+                    rightCount++; 1.0
+                } else {
+                    wrongCount++; -1.0
+                }
             } else {
-                wrongCount++; -1.0
+                noCount++
+                if (tradeState.data.get().priceDelta >= 0) {
+                    rightCount++; 1.0
+                } else {
+                    wrongCount++; -1.0
+                }
             }
-        } else {
-            noCount++
-            if (diff > 0) {
-                rightCount++; 1.0
-            } else {
-                wrongCount++; -1.0
-            }
-        }
-        tradeState.currentTime += dataBaseConfig.period
+        tradeState.currentTime += baseConfig.period
 
         if (printCounter++ >= 500) {
             printCounter = 0
             println("yes: $yesCount no: $noCount wrong: $wrongCount right: $rightCount")
         }
 
+        tradeState.lastReward = reward
         visualizer.newData(tradeState, sinkAction)
         return StepReply(tradeState, reward, isDone, JSONObject("{}"))
     }

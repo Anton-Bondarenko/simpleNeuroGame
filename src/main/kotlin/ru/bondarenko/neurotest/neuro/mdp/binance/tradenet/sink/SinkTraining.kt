@@ -11,6 +11,7 @@ import ru.bondarenko.neurotest.neuro.mdp.binance.repository.TradesRepo
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.DQNFactoryMultilayerDense
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeEnvironment
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeState
+import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.TradeNetSinkConfig
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.data.TradesAdapter
 
 @Component

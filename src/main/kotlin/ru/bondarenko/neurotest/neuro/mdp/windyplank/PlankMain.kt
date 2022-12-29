@@ -42,9 +42,12 @@ class TestMain {
         //define the mdp
         val mdp = PlankMdp()
 
-        //define the training method
+//        define the training method
         val dql: Learning<PlankState, Int, DiscreteSpace, IDQN<*>> =
             QLearningDiscreteDense(mdp, testNet, testQl, manager)
+//        val netConfig= TradeNetSinkConfig()
+//        val dql: Learning<PlankState, Int, DiscreteSpace, IDQN<*>> =
+//            QLearningDiscreteDense(mdp, DQNFactoryMultilayerDense(netConfig.conf), netConfig.testQl, manager)
 
         //start the training
         dql.train()
