@@ -1,7 +1,7 @@
 package ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.visualise
 
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.TradeState
-import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.SinkAction
+import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config.TradeAction
 import ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.data.TradesAdapter
 import java.awt.*
 import java.awt.event.WindowEvent
@@ -31,7 +31,7 @@ class ShowTrade {
         frame.dispatchEvent(WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
     }
 
-    fun newData(state: TradeState, action: SinkAction) {
+    fun newData(state: TradeState, action: TradeAction) {
         chartPanel.lastState = state
         chartPanel.addData(state.data, action)
         chartPanel.repaint()
@@ -56,7 +56,7 @@ class ShowTrade {
             return Dimension(xWidth, yHeight)
         }
 
-        fun addData(data: Optional<TradesAdapter.Data>, action: SinkAction) {
+        fun addData(data: Optional<TradesAdapter.Data>, action: TradeAction) {
             if (data.isEmpty) return
             if (lastState == null) return
             entities.add(VisualState(data.get(), action,  lastState!!.lastReward))
@@ -78,7 +78,7 @@ class ShowTrade {
                     g.drawLine(x - 1, yHeight - prevY.toInt(), x, yHeight - y.toInt())
 
                     g.color = pickDolor(state)
-                    if (state.sinkAction == SinkAction.YES) {
+                    if (state.tradeAction == TradeAction.DOWN) {
                         g.drawOval(x, yHeight - y.toInt(), 5, 5)
                     } else {
                         g.drawOval(x, yHeight - y.toInt(), 5, 5)
@@ -106,6 +106,6 @@ class ShowTrade {
             }
         }
 
-        data class VisualState(val data: TradesAdapter.Data, val sinkAction: SinkAction, val reward: Double)
+        data class VisualState(val data: TradesAdapter.Data, val tradeAction: TradeAction, val reward: Double)
     }
 }

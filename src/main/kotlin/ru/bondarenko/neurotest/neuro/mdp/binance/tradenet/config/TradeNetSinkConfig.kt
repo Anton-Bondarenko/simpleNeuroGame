@@ -2,9 +2,10 @@ package ru.bondarenko.neurotest.neuro.mdp.binance.tradenet.config
 
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
 import org.deeplearning4j.nn.conf.BackpropType
+import org.deeplearning4j.nn.conf.InputPreProcessor
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
-import org.deeplearning4j.nn.conf.layers.BatchNormalization
+import org.deeplearning4j.nn.conf.inputs.InputType
 import org.deeplearning4j.nn.conf.layers.DenseLayer
 import org.deeplearning4j.nn.conf.layers.OutputLayer
 import org.deeplearning4j.nn.weights.WeightInit
@@ -14,13 +15,16 @@ import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.learning.config.Nesterovs
 import org.nd4j.linalg.lossfunctions.LossFunctions
 
-class TradeNetSinkConfig : TradeBaseNetConfig() {
-    val netWide = 20
 
+class TradeNetSinkConfig {
+    val netWide = 10
+    val period: Long = 1000
+    val numFeatures: Int = 1
+    val featuresShape: IntArray = intArrayOf(numFeatures)
     val numActions: Int = 2
     val actionSpace: DiscreteSpace = DiscreteSpace(numActions)
     val testQl = QLearning.QLConfiguration(
-        123,  //Random seed
+        123456,  //Random seed
         1000,  //Max step By epoch
         500000,  //Max step
         1000,  //Max size of experience replay
@@ -31,44 +35,53 @@ class TradeNetSinkConfig : TradeBaseNetConfig() {
         0.99,  //gamma
         10.0,  //td-error clipping
         0.1F,  //min epsilon
-        5000,  //num step for eps greedy anneal
+        2000,  //num step for eps greedy anneal
         true //double DQN
     )
+    val preProcessorMap: MutableMap<Int, InputPreProcessor> = object : HashMap<Int, InputPreProcessor>() {
+        init {
+//            put(1, FeedForwardToRnnPreProcessor())
+//            put(2, RnnToFeedForwardPreProcessor())
+        }
+    }
 
-    val normalizationLayer =  BatchNormalization.Builder().nIn(numFeatures).nOut(numFeatures)
-        .activation(Activation.SOFTMAX).build()
     //Set up network configuration:
     val conf: MultiLayerConfiguration = run {
         var ind = 0
         NeuralNetConfiguration.Builder()
             .seed(testQl.seed.toLong())
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .updater(Nesterovs(0.001, 0.7))
+            .updater(Nesterovs(0.01, 0.99))
             .weightInit(WeightInit.XAVIER)
-            .l2(0.0005)
+            .activation(Activation.SOFTMAX)
+            .l2(0.01)
             .list()
+//            .layer(
+//                ind++, LSTM.Builder().nIn(numFeatures).nOut(netWide)
+//                    .activation(Activation.RELU).name("rrn_layer").build()
+//            )
             .layer(
-                ind++,  normalizationLayer)
-            .layer(
-                ind++,  DenseLayer.Builder().nIn(numFeatures).nOut(netWide)
+                ind++, DenseLayer.Builder().nIn(numFeatures).nOut(netWide).hasBias(true).name("dense_layer_1")
                     .activation(Activation.RELU).build()
             )
             .layer(
-                ind++, DenseLayer.Builder().nIn(netWide).nOut(netWide)
+                ind++, DenseLayer.Builder().nIn(netWide).nOut(netWide).hasBias(true).name("dense_layer_2")
                     .activation(Activation.RELU).build()
             )
             .layer(
-                ind++,
-                OutputLayer.Builder(LossFunctions.LossFunction.MSE)
-                    .activation(Activation.IDENTITY) //MCXENT + softmax for classification
-                    .nIn(netWide).nOut(numActions).build()
+                ind++, DenseLayer.Builder().nIn(netWide).nOut(netWide).hasBias(true).name("dense_layer_3").build()
+            )
+            .layer(
+                ind++, OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).nIn(netWide).nOut(numActions).build()
             )
             .pretrain(false).backprop(true)
-            .backpropType(BackpropType.Standard).tBPTTForwardLength(5).tBPTTBackwardLength(5)
+            .setInputType(InputType.feedForward(numFeatures.toLong()))
+            .backpropType(BackpropType.Standard)
+//            .inputPreProcessors(preProcessorMap)
             .build()
     }
 }
 
-enum class SinkAction(val value: Int) {
-    NO(0), YES(1);
+enum class TradeAction(val value: Int) {
+    UP(0), DOWN(1);
 }

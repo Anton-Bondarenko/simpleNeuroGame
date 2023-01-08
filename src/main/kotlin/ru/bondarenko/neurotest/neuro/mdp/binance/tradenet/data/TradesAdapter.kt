@@ -15,7 +15,8 @@ class TradesAdapter(
 
     fun getPrepared(from: Long, to: Long): Optional<Data> {
         val trades = tradesRepo.findByTimeBetween(from, to)
-        if (trades.isEmpty()) return Optional.empty()
+        if (trades.isEmpty())
+            return Optional.empty()
         val prevTrade = tradesRepo.findById(trades.first().id - 1)
         if (prevTrade.isEmpty)
             return Optional.empty()
