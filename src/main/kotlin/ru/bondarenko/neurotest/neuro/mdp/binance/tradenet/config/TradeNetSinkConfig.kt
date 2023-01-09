@@ -12,7 +12,7 @@ import org.deeplearning4j.nn.weights.WeightInit
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning
 import org.deeplearning4j.rl4j.space.DiscreteSpace
 import org.nd4j.linalg.activations.Activation
-import org.nd4j.linalg.learning.config.Nesterovs
+import org.nd4j.linalg.learning.config.Adam
 import org.nd4j.linalg.lossfunctions.LossFunctions
 
 
@@ -28,10 +28,10 @@ class TradeNetSinkConfig {
         1000,  //Max step By epoch
         500000,  //Max step
         1000,  //Max size of experience replay
-        32,  //size of batches
+        5,  //size of batches
         100,  //target update (hard)
         10,  //num step noop warmup
-        0.01,  //reward scaling
+        0.1,  //reward scaling
         0.99,  //gamma
         10.0,  //td-error clipping
         0.1F,  //min epsilon
@@ -51,9 +51,10 @@ class TradeNetSinkConfig {
         NeuralNetConfiguration.Builder()
             .seed(testQl.seed.toLong())
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-            .updater(Nesterovs(0.01, 0.99))
+//            .updater(Nesterovs(0.001, 0.5))
+            .updater(Adam(0.01))
             .weightInit(WeightInit.XAVIER)
-            .activation(Activation.SOFTMAX)
+//            .activation(Activation.SOFTMAX)
             .l2(0.01)
             .list()
 //            .layer(
@@ -69,10 +70,7 @@ class TradeNetSinkConfig {
                     .activation(Activation.RELU).build()
             )
             .layer(
-                ind++, DenseLayer.Builder().nIn(netWide).nOut(netWide).hasBias(true).name("dense_layer_3").build()
-            )
-            .layer(
-                ind++, OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).nIn(netWide).nOut(numActions).build()
+                ind++, OutputLayer.Builder(LossFunctions.LossFunction.SQUARED_LOSS).nIn(netWide).nOut(numActions).build()
             )
             .pretrain(false).backprop(true)
             .setInputType(InputType.feedForward(numFeatures.toLong()))

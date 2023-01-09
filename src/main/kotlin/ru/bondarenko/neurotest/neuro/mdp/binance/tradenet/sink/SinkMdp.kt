@@ -38,7 +38,11 @@ class SinkMdp(
     }
 
     override fun reset(): TradeState {
-        println("Reset. down: $downCount up: $upCount miss: $wrongCount correct: $rightCount")
+        try {
+            val percent = (rightCount / (rightCount + wrongCount).toFloat()) * 100
+            println("Reset. down: $downCount up: $upCount correct: $percent%")
+        } catch (e: Exception) {
+        }
         downCount = 0
         upCount = 0
         wrongCount = 0
@@ -79,7 +83,11 @@ class SinkMdp(
             } else {
                 upCount++
                 if (tradeState.data.get().priceDelta >= 0) {
-                    rightCount++; 1.0
+                    if ((tradeState.data.get().priceDelta == 0.0)) {
+                        rightCount++; 0.0
+                    }else{
+                        rightCount++; 1.0
+                    }
                 } else {
                     wrongCount++; -1.0
                 }
@@ -88,7 +96,11 @@ class SinkMdp(
 
         if (printCounter++ >= 500) {
             printCounter = 0
-            println("down: $downCount up: $upCount miss: $wrongCount correct: $rightCount")
+            try {
+                val percent = (rightCount / (rightCount + wrongCount).toFloat()) * 100
+                println("down: $downCount up: $upCount correct: $percent%")
+            } catch (e: Exception) {
+            }
         }
 
         tradeState.lastReward = reward
